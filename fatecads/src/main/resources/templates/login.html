@@ -21,6 +21,10 @@
                     Login ou senha inválidos. Verifique os dados e tente novamente.
                 </div>
 
+                <div class="alert alert-success" th:if="${sucesso}">
+                    <span th:text="${sucesso}"></span>
+                </div>
+
                 <div class="alert alert-success" th:if="${param.logout}">
                     Você saiu do sistema com sucesso.
                 </div>
@@ -42,6 +46,11 @@
                 <button class="button-primary" type="submit">Entrar</button>
                 <a class="button-secondary" href="/usuarios/criar">Criar usuário</a>
             </div>
+
+            <p class="login-footnote">
+                Esqueceu a senha?
+                <a href="/esqueci-senha">Clique aqui para redefinir via WhatsApp.</a>
+            </p>
 
             <p class="login-footnote">Use as credenciais cadastradas para entrar no painel administrativo.</p>
         </form>
