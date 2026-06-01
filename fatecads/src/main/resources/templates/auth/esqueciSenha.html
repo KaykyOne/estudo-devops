@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Esqueci a Senha</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/pages/formulario-aluno.css">
+</head>
+
+<body class="page-shell">
+    <main class="page page-form">
+        <section class="section-header">
+            <p class="eyebrow">RECUPERACAO //</p>
+            <h1>Esqueci a Senha</h1>
+            <p class="section-copy">Informe email e telefone para receber o link de redefinicao via WhatsApp.</p>
+        </section>
+
+        <form class="brutal-form" method="post" th:action="@{/esqueci-senha}">
+            <div class="login-alerts">
+                <div class="alert alert-success" th:if="${sucesso}">
+                    <span th:text="${sucesso}"></span>
+                </div>
+
+                <div class="alert alert-error" th:if="${erro}">
+                    <span th:text="${erro}"></span>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <label class="field field-full" for="email">
+                    <span>Email</span>
+                    <input type="email" id="email" name="email" required>
+                </label>
+
+                <label class="field field-full" for="telefone">
+                    <span>Telefone (com DDI)</span>
+                    <input type="text" id="telefone" name="telefone" placeholder="5517999999999" required>
+                </label>
+            </div>
+
+            <div class="actions-row">
+                <button class="button-primary" type="submit">Enviar link</button>
+                <a class="button-secondary" href="/login">Voltar para login</a>
+            </div>
+        </form>
+    </main>
+</body>
+
+</html>
