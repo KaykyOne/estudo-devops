@@ -1,0 +1,6 @@
+.git
+.idea
+.vscode
+target
+whatsapp-service/node_modules
+*.log

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FatecADS · Central</title>
+    <style>
+        :root {
+            --ink: #17212b;
+            --muted: #75808b;
+            --paper: #f5f6f2;
+            --card: #ffffff;
+            --line: #e5e8e3;
+            --navy: #132b35;
+            --navy-soft: #1d3a45;
+            --lime: #d8ee68;
+            --orange: #ff9c5b;
+            --blue: #8dd1e4;
+            --purple: #c7b7ef;
+            --pink: #f1b8c9;
+            --green: #a8d8b2;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Trebuchet MS", "Segoe UI", sans-serif; }
+        .shell { min-height: 100vh; display: grid; grid-template-columns: 260px 1fr; }
+        aside { background: var(--navy); color: #eef5ed; padding: 28px 20px; display: flex; flex-direction: column; }
+        .brand { display: flex; align-items: center; gap: 11px; padding: 0 9px 42px; }
+        .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; background: var(--lime); color: var(--navy); border-radius: 11px 11px 11px 3px; font-weight: 900; font-size: 18px; }
+        .brand strong { font-family: Georgia, serif; font-size: 20px; letter-spacing: -.5px; }
+        .brand small { display: block; color: #9eb0b0; font-size: 10px; margin-top: 2px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-label { padding: 0 12px; margin: 0 0 12px; color: #7f999b; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+        nav { display: grid; gap: 5px; }
+        nav a { color: #cbd9d5; padding: 12px; border-radius: 9px; text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; transition: .2s ease; }
+        nav a:hover, nav a.active { background: var(--navy-soft); color: white; transform: translateX(3px); }
+        nav a.active { box-shadow: inset 3px 0 var(--lime); }
+        .nav-icon { width: 18px; height: 18px; opacity: .9; }
+        .aside-foot { margin-top: auto; border-top: 1px solid #2d4a53; padding: 19px 10px 0; }
+        .aside-foot p { margin: 0 0 13px; color: #9eb0b0; font-size: 12px; line-height: 1.5; }
+        .aside-foot form { margin: 0; }
+        .logout { color: var(--lime); background: transparent; border: 0; padding: 0; font: inherit; font-size: 13px; font-weight: bold; }
+        main { padding: 33px clamp(22px, 4vw, 64px) 58px; max-width: 1440px; width: 100%; }
+        .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 42px; }
+        .eyebrow { color: #7d8986; font-size: 11px; text-transform: uppercase; letter-spacing: 1.7px; margin: 0 0 11px; }
+        h1 { font-family: Georgia, serif; font-weight: normal; font-size: clamp(32px, 4vw, 52px); letter-spacing: -2.5px; line-height: 1.03; margin: 0; }
+        .intro { color: var(--muted); max-width: 475px; margin: 13px 0 0; font-size: 15px; line-height: 1.55; }
+        .date-chip { display: flex; align-items: center; gap: 9px; color: #60706e; background: #e9ede5; border-radius: 999px; padding: 10px 14px; font-size: 12px; white-space: nowrap; }
+        .pulse { width: 8px; height: 8px; border-radius: 50%; background: #6ebc76; box-shadow: 0 0 0 4px #6ebc7625; }
+        .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 15px; }
+        .section-head h2 { font-size: 17px; margin: 0; letter-spacing: -.3px; }
+        .section-head span { color: var(--muted); font-size: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 13px; }
+        .module { min-height: 178px; background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 19px; text-decoration: none; color: var(--ink); position: relative; overflow: hidden; transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease; animation: rise .45s both; }
+        .module:nth-child(2) { animation-delay: .04s; } .module:nth-child(3) { animation-delay: .08s; } .module:nth-child(4) { animation-delay: .12s; } .module:nth-child(5) { animation-delay: .16s; } .module:nth-child(6) { animation-delay: .2s; } .module:nth-child(7) { animation-delay: .24s; }
+        .module:hover { transform: translateY(-5px); border-color: #cfd6cd; box-shadow: 0 15px 30px #20372b12; }
+        .module::after { content: "↗"; position: absolute; right: 19px; bottom: 17px; font-size: 20px; color: #7c8982; transition: transform .2s; }
+        .module:hover::after { transform: translate(3px, -3px); color: var(--ink); }
+        .module-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 11px; margin-bottom: 24px; font-size: 20px; }
+        .module h3 { font-size: 15px; margin: 0 0 6px; }
+        .module p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4; max-width: 145px; }
+        .c-orange { background: #fff0e5; } .c-blue { background: #e5f6fa; } .c-purple { background: #eee9fb; } .c-pink { background: #fcecf1; } .c-green { background: #e8f5e9; } .c-yellow { background: #f6f1d8; } .c-lime { background: #edf7c8; }
+        .lower { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; margin-top: 32px; }
+        .panel { background: var(--navy); color: white; border-radius: 15px; padding: 24px; min-height: 150px; position: relative; overflow: hidden; }
+        .panel::before { content: ""; width: 175px; height: 175px; border: 1px solid #ffffff20; border-radius: 50%; position: absolute; right: -42px; top: -73px; box-shadow: 0 0 0 18px #ffffff0c, 0 0 0 38px #ffffff08; }
+        .panel h2 { font-family: Georgia, serif; font-size: 23px; font-weight: normal; margin: 0 0 8px; }
+        .panel p { color: #afc0bd; max-width: 450px; margin: 0; font-size: 13px; line-height: 1.55; }
+        .panel .quick { display: inline-flex; color: var(--navy); background: var(--lime); margin-top: 17px; border-radius: 7px; padding: 9px 12px; font-size: 12px; font-weight: bold; text-decoration: none; }
+        .tip { background: #fffdf5; border: 1px solid #ebe6d7; color: var(--ink); }
+        .tip::before { border-color: #dfd8c4; box-shadow: 0 0 0 18px #dfd8c41a, 0 0 0 38px #dfd8c410; }
+        .tip h2 { color: #8b6c36; }
+        .tip p { color: #81755f; }
+        @keyframes rise { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 980px) { .shell { grid-template-columns: 215px 1fr; } .grid { grid-template-columns: repeat(2, 1fr); } .lower { grid-template-columns: 1fr; } }
+        @media (max-width: 650px) { .shell { display: block; } aside { padding: 15px; } .brand { padding-bottom: 16px; } .nav-label, .aside-foot { display: none; } nav { display: flex; overflow-x: auto; gap: 4px; } nav a { white-space: nowrap; padding: 9px; } nav a span:last-child { display: none; } main { padding: 28px 17px 40px; } .topbar { display: block; margin-bottom: 30px; } .date-chip { margin-top: 18px; width: fit-content; } .grid { gap: 9px; } .module { min-height: 160px; padding: 15px; } .module-icon { margin-bottom: 18px; } }
+    </style>
+</head>
+<body>
+<div class="shell">
+    <aside>
+        <div class="brand">
+            <div class="brand-mark">F</div>
+            <div><strong>FatecADS</strong><small>gestão acadêmica</small></div>
+        </div>
+        <p class="nav-label">Navegação</p>
+        <nav>
+            <a href="/home" class="active"><span class="nav-icon">⌂</span><span>Visão geral</span></a>
+            <a href="/alunos/listar"><span class="nav-icon">♙</span><span>Alunos</span></a>
+            <a href="/cursos/listar"><span class="nav-icon">▤</span><span>Cursos</span></a>
+            <a href="/professores/listar"><span class="nav-icon">♧</span><span>Professores</span></a>
+            <a href="/disciplinas/listar"><span class="nav-icon">▦</span><span>Disciplinas</span></a>
+            <a href="/usuarios/listar"><span class="nav-icon">◎</span><span>Usuários</span></a>
+            <a href="/produtos/listar"><span class="nav-icon">◇</span><span>Produtos</span></a>
+            <a href="/pedidos/criar"><span class="nav-icon">＋</span><span>Novo pedido</span></a>
+        </nav>
+        <div class="aside-foot">
+            <p>Organize a rotina acadêmica em um só lugar.</p>
+            <form action="/logout" method="post">
+                <button class="logout" type="submit">Sair da conta&nbsp; →</button>
+            </form>
+        </div>
+    </aside>
+
+    <main>
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Painel de controle · FatecADS</p>
+                <h1>Bom te ver por aqui.</h1>
+                <p class="intro">Acesse rapidamente os cadastros e operações do sistema. Tudo que você precisa, organizado para o próximo passo.</p>
+            </div>
+            <div class="date-chip"><span class="pulse"></span> Sistema online</div>
+        </header>
+
+        <div class="section-head"><h2>Áreas do sistema</h2><span>7 módulos disponíveis</span></div>
+        <section class="grid" aria-label="Módulos do sistema">
+            <a class="module" href="/alunos/listar"><div class="module-icon c-orange">♙</div><h3>Alunos</h3><p>Cadastre e acompanhe os alunos.</p></a>
+            <a class="module" href="/cursos/listar"><div class="module-icon c-blue">▤</div><h3>Cursos</h3><p>Gerencie os cursos oferecidos.</p></a>
+            <a class="module" href="/professores/listar"><div class="module-icon c-purple">♧</div><h3>Professores</h3><p>Organize o corpo docente.</p></a>
+            <a class="module" href="/disciplinas/listar"><div class="module-icon c-pink">▦</div><h3>Disciplinas</h3><p>Controle a grade acadêmica.</p></a>
+            <a class="module" href="/usuarios/listar"><div class="module-icon c-green">◎</div><h3>Usuários</h3><p>Administre acessos ao sistema.</p></a>
+            <a class="module" href="/produtos/listar"><div class="module-icon c-yellow">◇</div><h3>Produtos</h3><p>Veja estoque e cadastre produtos.</p></a>
+            <a class="module" href="/pedidos/criar"><div class="module-icon c-lime">＋</div><h3>Novo pedido</h3><p>Monte um pedido para um aluno.</p></a>
+        </section>
+
+        <section class="lower">
+            <div class="panel"><h2>Pronto para começar?</h2><p>Crie um pedido, escolha o aluno e adicione os produtos necessários em poucos passos.</p><a class="quick" href="/pedidos/criar">Abrir cadastro de pedido&nbsp; ↗</a></div>
+            <div class="panel tip"><h2>Atalho rápido</h2><p>Precisa atualizar o catálogo? Acesse Produtos para cadastrar uma nova opção.</p><a class="quick" href="/produtos/criar">Cadastrar produto&nbsp; ↗</a></div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

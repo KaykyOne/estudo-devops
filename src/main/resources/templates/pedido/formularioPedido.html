@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de pedidos</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; max-width: 980px; margin: 32px auto; padding: 0 20px; color: #222; }
+        h1 { text-align: center; }
+        .campo { margin: 18px 0; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        select, input { box-sizing: border-box; padding: 9px; border: 1px solid #aaa; border-radius: 4px; font-size: 1rem; }
+        select { width: 100%; max-width: 520px; }
+        input[type="number"] { width: 110px; }
+        button { padding: 9px 14px; border: 0; border-radius: 4px; background: #087f5b; color: white; cursor: pointer; }
+        button:hover { filter: brightness(.92); }
+        .btn-remove { background: #c92a2a; }
+        table { width: 100%; border-collapse: collapse; margin-top: 22px; }
+        th, td { padding: 11px 8px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background: #f1f3f5; }
+        .empty { text-align: center; color: #666; }
+        .total { display: block; margin: 18px 0; text-align: right; font-size: 1.15rem; font-weight: bold; }
+        dialog { border: 0; border-radius: 8px; padding: 24px; max-width: 380px; box-shadow: 0 8px 30px #0004; }
+        dialog::backdrop { background: #0006; }
+        dialog p { margin-top: 0; }
+        .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+        .btn-cancel { background: #868e96; }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+    <h1>Cadastro de Pedido</h1>
+    <a th:href="@{/home}">Voltar</a>
+
+    <div class="campo">
+        <label for="aluno">Aluno:</label>
+        <select id="aluno" required>
+            <option value="">Selecione um aluno</option>
+            <option th:each="aluno : ${alunos}" th:value="${aluno.idAluno}" th:text="${aluno.idAluno + ' - ' + aluno.nomeAluno}"></option>
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="produto">Produto:</label>
+        <select id="produto">
+            <option value="">Selecione um produto</option>
+            <option th:each="produto : ${produtos}" th:value="${produto.idProduto}"
+                    th:text="${produto.idProduto + ' - ' + produto.descricaoProduto}"
+                    th:attr="data-nome=${produto.descricaoProduto},data-preco=${produto.valorProduto}"></option>
+        </select>
+        <label for="quantidade" style="margin-top: 12px;">Quantidade:</label>
+        <input type="number" id="quantidade" min="1" step="1" placeholder="Quantidade">
+        <button type="button" id="btn-adicionar">Adicionar</button>
+    </div>
+
+    <table>
+        <thead><tr><th>Produto</th><th>Quantidade</th><th>Preço unitário</th><th>Subtotal</th><th>Ações</th></tr></thead>
+        <tbody id="tabela-itens"></tbody>
+    </table>
+    <p class="total">Total do pedido: R$ <span id="total-pedido">0,00</span></p>
+    <button type="button" id="btn-salvar">Confirmar pedido</button>
+
+    <dialog id="dialog-quantidade">
+        <p>Deixar a quantidade vazia ou igual a zero excluirá este item do pedido. Deseja realmente deixar a quantidade em 0?</p>
+        <div class="dialog-actions">
+            <button type="button" class="btn-cancel" id="btn-cancelar-exclusao">Cancelar</button>
+            <button type="button" class="btn-remove" id="btn-confirmar-exclusao">Sim, excluir item</button>
+        </div>
+    </dialog>
+
+    <script>
+        let itens = [];
+        let itemPendente = null;
+        const moeda = valor => Number(valor).toFixed(2).replace('.', ',');
+        const tabela = document.getElementById('tabela-itens');
+        const dialog = document.getElementById('dialog-quantidade');
+
+        function adicionarItem() {
+            const produto = document.getElementById('produto');
+            const quantidade = Number(document.getElementById('quantidade').value);
+            const opcao = produto.options[produto.selectedIndex];
+            if (!produto.value || !Number.isInteger(quantidade) || quantidade <= 0) {
+                alert('Selecione um produto e informe uma quantidade maior que zero.');
+                return;
+            }
+            const preco = Number(opcao.dataset.preco);
+            itens.push({ produto: { idProduto: Number(produto.value) }, nomeProduto: opcao.dataset.nome,
+                quantidade, preco, subtotal: quantidade * preco });
+            produto.value = '';
+            document.getElementById('quantidade').value = '';
+            renderTabela();
+        }
+
+        function removerItem(index) { itens.splice(index, 1); renderTabela(); }
+
+        function atualizarQuantidade(index, campo) {
+            const texto = campo.value.trim();
+            const quantidade = Number(texto);
+            if (texto === '' || quantidade === 0) {
+                itemPendente = { index, campo, quantidadeAnterior: itens[index].quantidade };
+                campo.value = '';
+                dialog.showModal();
+                return;
+            }
+            if (!Number.isInteger(quantidade) || quantidade < 0) {
+                campo.value = itens[index].quantidade;
+                return;
+            }
+            itens[index].quantidade = quantidade;
+            itens[index].subtotal = quantidade * itens[index].preco;
+            renderTabela();
+        }
+
+        function cancelarExclusao() {
+            if (itemPendente) itemPendente.campo.value = itemPendente.quantidadeAnterior;
+            itemPendente = null;
+            dialog.close();
+        }
+
+        function confirmarExclusao() {
+            if (itemPendente) itens.splice(itemPendente.index, 1);
+            itemPendente = null;
+            dialog.close();
+            renderTabela();
+        }
+
+        function renderTabela() {
+            tabela.innerHTML = '';
+            if (!itens.length) {
+                tabela.innerHTML = '<tr><td class="empty" colspan="5">Nenhum produto adicionado ao pedido.</td></tr>';
+            } else itens.forEach((item, index) => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `<td>${item.nomeProduto}</td><td><input class="quantidade-item" type="number" min="0" step="1" value="${item.quantidade}" aria-label="Quantidade de ${item.nomeProduto}"></td><td>R$ ${moeda(item.preco)}</td><td>R$ ${moeda(item.subtotal)}</td><td><button type="button" class="btn-remove">Remover</button></td>`;
+                linha.querySelector('.quantidade-item').addEventListener('blur', event => atualizarQuantidade(index, event.target));
+                linha.querySelector('.quantidade-item').addEventListener('keydown', event => { if (event.key === 'Enter') event.target.blur(); });
+                linha.querySelector('.btn-remove').addEventListener('click', () => removerItem(index));
+                tabela.appendChild(linha);
+            });
+            document.getElementById('total-pedido').textContent = moeda(itens.reduce((total, item) => total + item.subtotal, 0));
+        }
+
+        async function salvarPedido() {
+            const aluno = document.getElementById('aluno').value;
+            if (!aluno) return alert('Selecione um aluno antes de salvar!');
+            if (!itens.length) return alert('Adicione ao menos um produto ao pedido!');
+            const resposta = await fetch('/pedidos', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ aluno: { idAluno: Number(aluno) }, itens }) });
+            if (!resposta.ok) throw new Error('Falha ao salvar pedido');
+            alert('Pedido salvo com sucesso!');
+            location.reload();
+        }
+
+        document.getElementById('btn-adicionar').addEventListener('click', adicionarItem);
+        document.getElementById('btn-salvar').addEventListener('click', () => salvarPedido().catch(() => alert('Erro ao salvar o pedido. Tente novamente.')));
+        document.getElementById('btn-cancelar-exclusao').addEventListener('click', cancelarExclusao);
+        document.getElementById('btn-confirmar-exclusao').addEventListener('click', confirmarExclusao);
+        renderTabela();
+    </script>
+</body>
+</html>

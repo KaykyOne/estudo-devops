@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de produtos</title>
+    <style>
+        body { font-family: Arial, Helvetica, sans-serif; max-width: 700px; margin: 32px auto; padding: 0 20px; }
+        h1 { text-align: center; }
+        form { display: grid; gap: 8px; }
+        input { padding: 8px; font-size: 1rem; }
+        button { width: fit-content; padding: 9px 15px; border: 0; border-radius: 4px; background: #087f5b; color: white; cursor: pointer; }
+        #preview { max-width: 220px; max-height: 180px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; padding: 4px; }
+        .sem-imagem { color: #666; }
+    </style>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+    <div th:replace="~{fragments/navigation :: navigation}"></div>
+    <h1>Cadastro de Produtos</h1>
+    <form th:action="@{/produtos/salvar}" method="post" enctype="multipart/form-data" th:object="${produto}">
+        <input type="hidden" th:field="*{idProduto}">
+
+        <label for="descricaoProduto">Descrição do Produto</label>
+        <input type="text" th:field="*{descricaoProduto}" id="descricaoProduto" required>
+
+        <label for="valorProduto">Valor do Produto</label>
+        <input type="number" th:field="*{valorProduto}" id="valorProduto" step="0.01" min="0" required>
+
+        <label for="unidadeProduto">Unidade</label>
+        <input type="text" th:field="*{unidadeProduto}" id="unidadeProduto" required>
+
+        <label for="marcaProduto">Marca</label>
+        <input type="text" th:field="*{marcaProduto}" id="marcaProduto" required>
+
+        <label for="imagem">Imagem do produto</label>
+        <input type="file" id="imagem" name="imagem" accept="image/*">
+        <small>Formatos de imagem aceitos. Ao editar, deixe vazio para manter a imagem atual.</small>
+        <img id="preview" th:if="${produto.imagemProduto != null and produto.imagemProduto.length > 0}"
+             th:src="@{/produtos/{id}/imagem(id=${produto.idProduto})}" alt="Imagem atual do produto">
+        <span id="sem-imagem" class="sem-imagem"
+              th:if="${produto.imagemProduto == null or produto.imagemProduto.length == 0}">Nenhuma imagem selecionada</span>
+
+        <button type="submit">Salvar Produto</button>
+    </form>
+    <p><a th:href="@{/produtos/listar}">Voltar para a lista</a></p>
+
+    <script>
+        const campoImagem = document.getElementById('imagem');
+        campoImagem.addEventListener('change', event => {
+            const arquivo = event.target.files[0];
+            if (!arquivo) return;
+            if (!arquivo.type.startsWith('image/')) {
+                alert('Selecione um arquivo de imagem válido.');
+                event.target.value = '';
+                return;
+            }
+            const preview = document.getElementById('preview') || document.createElement('img');
+            preview.id = 'preview';
+            preview.alt = 'Pré-visualização da imagem';
+            preview.src = URL.createObjectURL(arquivo);
+            document.getElementById('sem-imagem')?.remove();
+            campoImagem.insertAdjacentElement('afterend', preview);
+        });
+    </script>
+</body>
+</html>

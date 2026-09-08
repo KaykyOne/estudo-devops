@@ -1,0 +1,16 @@
+<nav th:fragment="navigation" class="top-nav" aria-label="Navegação principal">
+    <a class="top-brand" th:href="@{/home}"><span class="top-mark">F</span><span>FatecADS</span></a>
+    <div class="top-links">
+        <a th:href="@{/home}">Início</a>
+        <a th:href="@{/alunos/listar}">Alunos</a>
+        <a th:href="@{/cursos/listar}">Cursos</a>
+        <a th:href="@{/professores/listar}">Professores</a>
+        <a th:href="@{/disciplinas/listar}">Disciplinas</a>
+        <a th:href="@{/usuarios/listar}">Usuários</a>
+        <a th:href="@{/produtos/listar}">Produtos</a>
+        <a th:href="@{/pedidos/criar}">Novo pedido</a>
+        <form th:action="@{/logout}" method="post">
+            <button class="top-exit" type="submit">Sair</button>
+        </form>
+    </div>
+</nav>
