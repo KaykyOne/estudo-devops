@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.fatecads.fatecads.entity.Usuario;
 import br.com.fatecads.fatecads.repository.UsuarioRepository;
+import br.com.fatecads.fatecads.security.Roles;
 
 
 @Service
@@ -24,6 +25,11 @@ public class UsuarioService {
     public Usuario save(Usuario usuario) {
         usuario.setSenhaUsuario(passwordEncoder.encode(usuario.getSenhaUsuario()));
         return usuarioRepository.save(usuario);
+    }
+
+    public Usuario createClient(Usuario usuario) {
+        usuario.setRole(Roles.CLIENT);
+        return save(usuario);
     }
 
     // Método para listar todos os alunos

@@ -22,7 +22,8 @@ public class SecurityConfig {
     "/fatecads",
     "/css/**",
     "/images/**",
-    "/usuarios/**",
+    "/usuarios/criar",
+    "/usuarios/salvar",
     "/recuperacao/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())

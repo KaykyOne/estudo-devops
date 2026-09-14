@@ -25,7 +25,11 @@ public class UsuarioController {
     // Método para salvar um aluno
     @PostMapping("/salvar")
     public String salvar(@ModelAttribute Usuario usuario) {
-        usuarioService.save(usuario);
+        if (usuario.getIdUsuario() == null) {
+            usuarioService.createClient(usuario);
+        } else {
+            usuarioService.save(usuario);
+        }
         return "/login";
     }   
 

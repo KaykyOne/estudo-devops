@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import br.com.fatecads.fatecads.security.Roles;
 
 @Entity
 @Setter
@@ -44,5 +45,5 @@ public class Usuario {
 
     private LocalDateTime expiracaoCodigo;
 
-    private String role = "ROLE_USER";
+    private String role = Roles.CLIENT;
 }
